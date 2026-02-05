@@ -74,15 +74,15 @@
     <h1>Gerador de Cartelas de Bingo</h1>
 
     <label>Array de itens (JSON)</label>
-    <textarea id="itemsInput">
-["Carro", "Avião", "Barco", "Bicicleta", "Skate", "Patinete"]
-  </textarea>
+    <textarea id="itemsInput" placeholder="Exemplo com Animais">
+["Abelha", "Borboleta", "Cachorro", "Cavalo", "Coelho", "Elefante", "Galinha", "Gato", "Girafa", "Leão", "Macaco", "Ovelha", "Pato", "Peixe", "Porco", "Sapo", "Tartaruga", "Tigre", "Urso", "Vaca"]
+    </textarea>
 
     <label>Número de cartelas</label>
-    <input type="number" id="cartelasInput" value="2" min="1" />
+    <input type="number" id="cartelasInput" value="5" min="1" />
 
     <label>Itens por cartela</label>
-    <input type="number" id="itensPorCartelaInput" value="3" min="1" />
+    <input type="number" id="itensPorCartelaInput" value="12" min="1" />
 
     <button onclick="gerarCartelas()">Gerar Cartelas</button>
 
