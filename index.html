@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Gerador de Cartelas de Bingo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 120px;
+            font-family: monospace;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        pre {
+            background: #111827;
+            color: #e5e7eb;
+            padding: 15px;
+            margin-top: 20px;
+            overflow-x: auto;
+            border-radius: 4px;
+        }
+
+        .error {
+            color: #b91c1c;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Gerador de Cartelas de Bingo</h1>
+
+    <label>Array de itens (JSON)</label>
+    <textarea id="itemsInput">
+["Carro", "Avião", "Barco", "Bicicleta", "Skate", "Patinete"]
+  </textarea>
+
+    <label>Número de cartelas</label>
+    <input type="number" id="cartelasInput" value="2" min="1" />
+
+    <label>Itens por cartela</label>
+    <input type="number" id="itensPorCartelaInput" value="3" min="1" />
+
+    <button onclick="gerarCartelas()">Gerar Cartelas</button>
+
+    <div id="error" class="error"></div>
+    <pre id="resultado"></pre>
+
+    <script>
+        function shuffle(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function gerarCartelas() {
+            const errorEl = document.getElementById("error");
+            const resultEl = document.getElementById("resultado");
+            errorEl.textContent = "";
+            resultEl.textContent = "";
+
+            let itens;
+
+            try {
+                itens = JSON.parse(document.getElementById("itemsInput").value);
+                if (!Array.isArray(itens)) throw new Error();
+            } catch {
+                errorEl.textContent = "Array de itens inválido. Use formato JSON.";
+                return;
+            }
+
+            const numCartelas = parseInt(document.getElementById("cartelasInput").value);
+            const itensPorCartela = parseInt(document.getElementById("itensPorCartelaInput").value);
+
+            if (itensPorCartela > itens.length) {
+                errorEl.textContent = "Itens por cartela não pode ser maior que o total de itens.";
+                return;
+            }
+
+            const cartelas = [];
+            const combinacoesUsadas = new Set();
+            const maxTentativas = 10000;
+            let tentativas = 0;
+
+            while (cartelas.length < numCartelas && tentativas < maxTentativas) {
+                tentativas++;
+
+                const selecionados = shuffle(itens)
+                    .slice(0, itensPorCartela)
+                    .sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+                const chave = selecionados.join("|");
+
+                if (!combinacoesUsadas.has(chave)) {
+                    combinacoesUsadas.add(chave);
+                    cartelas.push(selecionados);
+                }
+            }
+
+            if (cartelas.length < numCartelas) {
+                errorEl.textContent =
+                    "Não foi possível gerar todas as cartelas sem duplicação com esses parâmetros.";
+            }
+
+            resultEl.textContent = JSON.stringify(cartelas, null, 4);
+        }
+    </script>
+
+</body>
+
+</html>
